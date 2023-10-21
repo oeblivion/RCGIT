@@ -508,31 +508,29 @@ int flow_modify(struct flow_cfg *target, char *buffer)
 }
 
 // update in progress //
-int start_time(long int hour, long int min, long int sec, long int msec)//msec is miliseconds
+int start_time(long int d, long int mo, long int y, long int h, long int m, long int s, long int ms)//msec is miliseconds
 {
-  struct timeval c_time;
-  time_t current_time;
-  long int  h    = hour;
-  long int  m    = min;
-  long int  s    = sec;
-  long int  ms   = msec;
-  struct timeval  wait_start = {0,0};
-
-  time(&current_time);
-
-  RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld:%ld)\n",h,m,s,ms);
+  struct tm start_tm;
+//struct timeval  now = {0,0};
+//struct timeval  wait = {0,0};
+//struct timeval  start = {0,0};
+  start_tm.tm_year = y - 1900;   // Year (since 1900, so 2021 becomes 121)
+  start_tm.tm_mon = mo;     // Month (0 = January, 1 = February, ...)
+  start_tm.tm_mday = d;    // Day of the month
+  start_tm.tm_hour = h;   // Hour (24-hour format)
+  start_tm.tm_min = m;     // Minutes
+  start_tm.tm_sec = s;     // Seconds
 
   // crash provide //
-  if(h<0 || h>23 || m<0 || m>59 || s<0 || s>59 || ms<0 || ms>999){
+  if(mo<0 || mo>11 || d<1 || d>31 || h<0 || h>23 || m<0 || m>59 || s<0 || s>59 || ms<0 || ms>999){
     RUDEBUG1("start_time() - invalid START time\n");
     return(-1);
   }
-
-
-
-
-  wait_start.tv_sec  = (3600 * h) + (60 * m) + (s);
-  wait_start.tv_usec = ms;
+  RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld:%ld:%ld:%ld:%ld",d,mo,y,h,m,s,ms);
+  // calculate start as unix
+  tester_start.tv_sec = ((int)mktime(&start_tm));
+  tester_start.tv_usec = ms;
+  
   
   return 0;
 }
@@ -549,7 +547,7 @@ int read_cfg(FILE *infile)
   int  commands          = 0;
   int  read_lines        = 0;
   int  start_set         = 0;
-  long int h,m,s,ms,time,id = 0;
+  long int day,month,year,h,m,s,ms,time,id = 0;
   int  tos               = 0;
   char buffer[1024],cmd[12];
 
@@ -578,11 +576,11 @@ int read_cfg(FILE *infile)
 
     if(strncasecmp(buffer,"START",5) == 0){
       RUDEBUG7("read_cfg() - read START (line #=%d)\n",read_lines);
-      if((4!=sscanf(buffer,"%*5s %ld:%ld:%ld:%ld",&h,&m,&s,&ms)) || (start_set!=0)){
+      if((7!=sscanf(buffer,"%*5s %ld:%ld:%ld:%ld:%ld:%ld:%ld",&day,&month,&year,&h,&m,&s,&ms)) || (start_set!=0)){
 	      errors--;
 	      RUDEBUG1("read_cfg() - START argument/already set error\n");
       } else {
-	if(start_time(h,m,s,ms) == 0){
+	if(start_time(day,month,year,h,m,s,ms) == 0){
 	  start_set = 1;
 	  commands++;
 	} else {
