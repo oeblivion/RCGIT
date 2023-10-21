@@ -511,7 +511,7 @@ int flow_modify(struct flow_cfg *target, char *buffer)
 /* original function backup
  * Count the START time in the future...
 */ 
-int start_time(long int hour, long int min, long int sec, long int msec)
+int start_time(long int hour, long int min, long int sec)
 {
   struct tm c_time;
   time_t    current;
@@ -519,7 +519,6 @@ int start_time(long int hour, long int min, long int sec, long int msec)
   long int  h    = hour;
   long int  m    = min;
   long int  s    = sec;
-  long int  ms   = msec;
 
   RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld)\n",h,m,s);
 
