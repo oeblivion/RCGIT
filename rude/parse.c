@@ -508,20 +508,19 @@ int flow_modify(struct flow_cfg *target, char *buffer)
 }
 
 // update in progress //
-int start_time(long int hour, long int min, long int sec, long int msec)
+int start_time(long int hour, long int min, long int sec, long int msec)//msec is miliseconds
 {
-  struct tm c_time;
-  time_t    current;
+  struct timeval c_time;
   long int  temp = 0;
   long int  h    = hour;
   long int  m    = min;
   long int  s    = sec;
   long int  ms   = msec;
-  long int  start_ms = 0;
+  struct timeval  start_ms = {0,0};
 
   RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld:%ld)\n",h,m,s,ms);
 
-  // crash provide
+  // crash provide //
   if(h<0 || h>23 || m<0 || m>59 || s<0 || s>59 || ms<0 || ms>999){
     RUDEBUG1("start_time() - invalid START time\n");
     return(-1);
@@ -529,19 +528,21 @@ int start_time(long int hour, long int min, long int sec, long int msec)
 
   /* Get the current time and do the calculations... */
   time(&current);
-  gettimeofday(&tester_start,NULL);
+  gettimeofday(&tester_start,NULL); // time in seconds.ms
   memcpy(&c_time,localtime(&current),sizeof(struct tm));
 
   /* Set the struct for the real START time */
-  start_ms = 
+  start_ms = (3600 * h) + (60 * m) + (s) + (ms/1000);
   
+
+  if(start_ms < tester_start)
   /* ... and finally add the difference to the START time. */
   tester_start.tv_sec += temp;
 
   RUDEBUG7("start_time() - (%02ld:%02ld:%02ld)-(%02d:%02d:%02d) = %ld sec\n",
 	   hour,min,sec,c_time.tm_hour,c_time.tm_min,c_time.tm_sec,temp);
+
   RUDEBUG7("debug_tester_start:\n(%ld.%ld)\n",tester_start.tv_sec, tester_start.tv_usec);
-  tester_start.tv_usec = 0; //0 setzen um mikrosekunden zu berücksichtigen gehts weiter
   return 0;
 }
 
