@@ -522,7 +522,7 @@ int start_time(long int hour, long int min, long int sec)
 
   RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld)\n",h,m,s);
 
-  if(h<0 || h>23 || m<0 || m>59 || s<0 || s>59 || ms < 0 || ms > 999){
+  if(h<0 || h>23 || m<0 || m>59 || s<0 || s>59){
     RUDEBUG1("start_time() - invalid START time\n");
     return(-1);
   }
