@@ -528,9 +528,8 @@ int start_time(long int d, long int mo, long int y, long int h, long int m, long
   }
   RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld:%ld:%ld:%ld:%ld",d,mo,y,h,m,s,ms);
   // calculate start as unix
-  tester_start.tv_sec = ((int)mktime(&start_tm));
+  tester_start.tv_sec = (int)localtime((&start_tm));
   tester_start.tv_usec = ms;
-  
   
   return 0;
 }
