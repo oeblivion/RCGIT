@@ -608,7 +608,7 @@ int read_cfg(FILE *infile)
 	      errors--;
 	      RUDEBUG1("read_cfg() - START argument/already set error\n");
       } else {
-	if(start_time(h,m,s,ms) == 0){
+	if(start_time(h,m,s) == 0){
 	  start_set = 1;
 	  commands++;
 	} else {
