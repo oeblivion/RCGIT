@@ -510,7 +510,7 @@ int flow_modify(struct flow_cfg *target, char *buffer)
 
 /* original function backup
  * Count the START time in the future...
- */
+ 
 int start_time(long int hour, long int min, long int sec, long int msec)
 {
   struct tm c_time;
@@ -563,6 +563,7 @@ int start_time(long int hour, long int min, long int sec, long int msec)
   tester_start.tv_usec = 0; // set the microseconds to null
   return 0;
 }
+*/
 
 // update in progress //
 int start_time(long int hour, long int min, long int sec, long int msec)

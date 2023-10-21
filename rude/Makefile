@@ -1,7 +1,7 @@
 # Generated automatically from Makefile.in by configure.
-# $Id: Makefile.in,v 1.1.1.1 2002/06/13 12:15:20 zampo Exp $
+# $Id: Makefile.in,v 1.1.1.1 2002/06/13 12:15:21 zampo Exp $
 #
-# autoconf/Makefile.in - the main Makefile template for RUDE and CRUDE
+# Makefile.in for RUDE
 #
 # Authors: Juha Laine     <james@cs.tut.fi>
 #	   Sampo Saaristo <sambo@cc.tut.fi>
@@ -10,59 +10,49 @@
 #                    All rights reserved
 #
 ##############################################################################
-SHELL   = /bin/sh
-SUBDIRS = rude crude
+SHELL = /bin/sh
 
+prefix        = /usr/local
+exec_prefix   = ${prefix}
 
-all:
-	@for i in $(SUBDIRS); do \
-		(cd $$i && $(MAKE) all) \
-	done
+bindir        = ${exec_prefix}/bin
+mandir        = ${prefix}/man/man8
+sbindir       = ${exec_prefix}/sbin
+srcdir        = .
+
+INSTALL  = /usr/bin/install -c -o root -g root -m 0755
+
+CC       = gcc
+CFLAGS   =  -O2 -Wall -I../include
+LDFLAGS  = 
+DEFS     = -DHAVE_CONFIG_H
+LIBS     = -lm 
+MAN8     = rude.8
+
+RUDE_OBJS = flow_cntl.o flow_txmit.o main.o parse.o
+
+##############################################################################
+# Rules for make
+##############################################################################
+.c.o:
+	$(CC) $(CFLAGS) $(DEFS) -c -o $*.o $<
+
+all:	rude
+
+rude:	$(RUDE_OBJS)
+	$(CC) $(CFLAGS) $(LIBS) $(DEFS) $(LDFLAGS) -o rude $(RUDE_OBJS)
 
 clean:
-	rm -f *~ config.cache config.log config.status
-	@for i in $(SUBDIRS); do \
-		(cd $$i && $(MAKE) clean) \
-	done
+	rm -f *~ *.o rude
 
 distclean:
-	rm -f *~ config.cache config.log config.status configure Makefile
-	rm -f doc/*~ autoconf/config.hin include/config.h include/stamp.h
-	@for i in $(SUBDIRS); do \
-		(cd $$i && $(MAKE) distclean) \
-	done
+	rm -f *~ *.o rude Makefile
 
-rude:
-	cd rude && $(MAKE) all
-
-crude:
-	cd crude && $(MAKE) all
-
-install:
-	@for i in $(SUBDIRS); do \
-		(cd $$i && $(MAKE) install) \
-	done
-
-##############################################################################
-# Rules for autoconfiguration file REmaking
-##############################################################################
-update: include/stamp.h
-
-include/stamp.h: autoconf/config.hin configure autoconf/Makefile.in rude/Makefile.in crude/Makefile.in
-	./configure
-
-autoconf/config.hin: autoconf/acconfig.h
-	@autoheader -l ./autoconf
-	@touch autoconf/config.hin
-	@echo "****************************"
-	@echo "* header templates updated *"
-	@echo "****************************"
-
-configure: autoconf/configure.in
-	rm -f config.*
-	@autoconf autoconf/configure.in > configure; chmod 755 configure
-	@echo "****************************"
-	@echo "* configure script updated *"
-	@echo "****************************"
+install: rude
+	@if [ ! -d $(bindir) ]; then mkdir -m 0755 $(bindir); fi;
+	$(INSTALL) rude $(bindir)
+	@if [ ! -d $(mandir) ]; then mkdir -m 0755 $(mandir); fi;
+	$(INSTALL) rude.8 $(mandir)
+ 
 
 ##############################################################################
