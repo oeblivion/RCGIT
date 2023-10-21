@@ -507,38 +507,6 @@ int flow_modify(struct flow_cfg *target, char *buffer)
   return 0;
 }
 
-// update in progress //
-int start_time(long int d, long int mo, long int y, long int h, long int m, long int s, long int us)//msec is miliseconds
-{
-  struct tm start_tm;
-  struct timeval local = {0,0};
-  start_tm.tm_year = y - 1900;   // Year (since 1900, so 2021 becomes 121)
-  start_tm.tm_mon = mo;     // Month (0 = January, 1 = February, ...)
-  start_tm.tm_mday = d;    // Day of the month
-  start_tm.tm_hour = h;   // Hour (24-hour format)
-  start_tm.tm_min = m;     // Minutes
-  start_tm.tm_sec = s;     // Seconds
-
-  // crash provide //
-  if(mo<0 || mo>11 || d<1 || d>31 || h<0 || h>23 || m<0 || m>59 || s<0 || s>59 || ms<0 || ms>999999){
-    RUDEBUG1("start_time() - invalid START time\n");
-    return(-1);
-  }
-  RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld:%ld:%ld:%ld:%ld",d,mo,y,h,m,s,ms);
-
-  // calculate start as unix
-  local.tv_sec = mktime(&start_tm); 
-  local.tv_usec = us;
-
-  // convert the start time to UTC
-  if(convert_local_time_to_utc(&local; &tester_start) != 0) {
-    RUDEBUG1("ERROR in TIME CONVERSION");
-    return(-1);
-  }
-  
-  return 0;
-}
-
 // chatgpt
 int convert_local_time_to_utc(struct timeval *local_time, struct timeval *utc_time) {
     // Get the current local time zone offset from UTC in seconds
@@ -559,6 +527,37 @@ int convert_local_time_to_utc(struct timeval *local_time, struct timeval *utc_ti
     return 0;
 }
 
+// update in progress // calculates start time
+int start_time(long int d, long int mo, long int y, long int h, long int m, long int s, long int us)//msec is miliseconds
+{
+  struct tm start_tm;
+  struct timeval local = {0,0};
+  start_tm.tm_year = y - 1900;   // Year (since 1900, so 2021 becomes 121)
+  start_tm.tm_mon = mo;     // Month (0 = January, 1 = February, ...)
+  start_tm.tm_mday = d;    // Day of the month
+  start_tm.tm_hour = h;   // Hour (24-hour format)
+  start_tm.tm_min = m;     // Minutes
+  start_tm.tm_sec = s;     // Seconds
+
+  // crash provide //
+  if(mo<0 || mo>11 || d<1 || d>31 || h<0 || h>23 || m<0 || m>59 || s<0 || s>59 || us<0 || us>999999){
+    RUDEBUG1("start_time() - invalid START time\n");
+    return(-1);
+  }
+  RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld:%ld:%ld:%ld:%ld",d,mo,y,h,m,s,us);
+
+  // calculate start as unix
+  local.tv_sec = mktime(&start_tm); 
+  local.tv_usec = us;
+
+  // convert the start time to UTC
+  if(convert_local_time_to_utc(&local, &tester_start) != 0) {
+    RUDEBUG1("ERROR in TIME CONVERSION");
+    return(-1);
+  }
+  
+  return 0;
+}
 
 /*
  * The main parsing routine ( with some limitations/features ;)
