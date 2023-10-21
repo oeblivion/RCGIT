@@ -508,12 +508,10 @@ int flow_modify(struct flow_cfg *target, char *buffer)
 }
 
 // update in progress //
-int start_time(long int d, long int mo, long int y, long int h, long int m, long int s, long int ms)//msec is miliseconds
+int start_time(long int d, long int mo, long int y, long int h, long int m, long int s, long int us)//msec is miliseconds
 {
   struct tm start_tm;
-//struct timeval  now = {0,0};
-//struct timeval  wait = {0,0};
-//struct timeval  start = {0,0};
+  struct timeval local = {0,0};
   start_tm.tm_year = y - 1900;   // Year (since 1900, so 2021 becomes 121)
   start_tm.tm_mon = mo;     // Month (0 = January, 1 = February, ...)
   start_tm.tm_mday = d;    // Day of the month
@@ -522,16 +520,40 @@ int start_time(long int d, long int mo, long int y, long int h, long int m, long
   start_tm.tm_sec = s;     // Seconds
 
   // crash provide //
-  if(mo<0 || mo>11 || d<1 || d>31 || h<0 || h>23 || m<0 || m>59 || s<0 || s>59 || ms<0 || ms>999){
+  if(mo<0 || mo>11 || d<1 || d>31 || h<0 || h>23 || m<0 || m>59 || s<0 || s>59 || ms<0 || ms>999999){
     RUDEBUG1("start_time() - invalid START time\n");
     return(-1);
   }
   RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld:%ld:%ld:%ld:%ld",d,mo,y,h,m,s,ms);
+
   // calculate start as unix
-  tester_start.tv_sec = (int)localtime((&start_tm));
-  tester_start.tv_usec = ms;
+  local.tv_sec = mktime(&start_tm); 
+  local.tv_usec = us;
+
+  // convert the start time to UTC
+  convert_local_time_to_utc(&local; &tester_start);
   
   return 0;
+}
+
+// chatgpt
+int convert_local_time_to_utc(struct timeval *local_time, struct timeval *utc_time) {
+    // Get the current local time zone offset from UTC in seconds
+    time_t now = time(NULL);
+    struct tm* local_tm = localtime(&now);
+    time_t local_tz_offset = -local_tm->tm_gmtoff;
+
+    // Convert the struct timeval to total microseconds
+    long long local_time_usec = local_time->tv_sec * 1000000LL + local_time->tv_usec;
+
+    // Adjust the local time to UTC by subtracting the local time zone offset
+    long long utc_time_usec = local_time_usec - local_tz_offset * 1000000LL;
+
+    // Set the adjusted UTC time back into the struct timeval
+    utc_time->tv_sec = utc_time_usec / 1000000;
+    utc_time->tv_usec = utc_time_usec % 1000000;
+
+    return 0;
 }
 
 
@@ -546,7 +568,7 @@ int read_cfg(FILE *infile)
   int  commands          = 0;
   int  read_lines        = 0;
   int  start_set         = 0;
-  long int day,month,year,h,m,s,ms,time,id = 0;
+  long int day,month,year,h,m,s,us,time,id = 0;
   int  tos               = 0;
   char buffer[1024],cmd[12];
 
@@ -575,11 +597,11 @@ int read_cfg(FILE *infile)
 
     if(strncasecmp(buffer,"START",5) == 0){
       RUDEBUG7("read_cfg() - read START (line #=%d)\n",read_lines);
-      if((7!=sscanf(buffer,"%*5s %ld:%ld:%ld:%ld:%ld:%ld:%ld",&day,&month,&year,&h,&m,&s,&ms)) || (start_set!=0)){
+      if((7!=sscanf(buffer,"%*5s %ld:%ld:%ld:%ld:%ld:%ld:%ld",&day,&month,&year,&h,&m,&s,&us)) || (start_set!=0)){
 	      errors--;
 	      RUDEBUG1("read_cfg() - START argument/already set error\n");
       } else {
-	if(start_time(day,month,year,h,m,s,ms) == 0){
+	if(start_time(day,month,year,h,m,s,us) == 0){
 	  start_set = 1;
 	  commands++;
 	} else {
