@@ -531,7 +531,10 @@ int start_time(long int d, long int mo, long int y, long int h, long int m, long
   local.tv_usec = us;
 
   // convert the start time to UTC
-  convert_local_time_to_utc(&local; &tester_start);
+  if(convert_local_time_to_utc(&local; &tester_start) != 0) {
+    RUDEBUG1("ERROR in TIME CONVERSION");
+    return(-1);
+  }
   
   return 0;
 }
