@@ -1,0 +1,4 @@
+crude version 0.70, Copyright (C) 1999 Juha Laine and Sampo Saaristo
+crude comes with ABSOLUTELY NO WARRANTY!
+This is free software, and you are welcome to redistribute it
+under GNU GENERAL PUBLIC LICENSE Version 2.

@@ -1,0 +1,40 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:553: checking whether make sets ${MAKE}
+configure:591: checking for a BSD compatible install
+configure:655: checking host system type
+configure:681: checking for gcc
+configure:794: checking whether the C compiler (gcc  ) works
+configure:810: gcc -o conftest    conftest.c  1>&5
+configure:807:1: warning: return type defaults to 'int' [-Wimplicit-int]
+  807 | main(){return(0);}
+      | ^~~~
+configure:836: checking whether the C compiler (gcc  ) is a cross-compiler
+configure:841: checking whether we are using GNU C
+configure:869: checking whether gcc accepts -g
+configure:911: checking for POSIXized ISC
+configure:934: checking how to run the C preprocessor
+configure:1014: checking for ANSI C header files
+configure:1118: checking for sys/wait.h that is POSIX.1 compatible
+configure:1160: checking whether time.h and sys/time.h may both be included
+configure:1198: checking for sys/time.h
+configure:1198: checking for unistd.h
+configure:1198: checking for signal.h
+configure:1237: checking for working const
+configure:1312: checking whether struct tm is in sys/time.h or time.h
+configure:1346: checking for uid_t in sys/types.h
+configure:1384: checking for gettimeofday
+configure:1384: checking for select
+configure:1384: checking for strerror
+configure:1384: checking for munlockall
+configure:1384: checking for sigaction
+configure:1438: checking for gethostbyname
+configure:1549: checking for socket
+configure:1660: checking for inet_addr
+configure:1771: checking for sched_setscheduler
+configure:1882: checking for pow
+configure:1929: checking for library containing pow
+configure:2008: checking if we should enable -g
+configure:2028: checking if we should enable -Wall
+configure:2045: checking if we print debugging info
