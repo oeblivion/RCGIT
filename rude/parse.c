@@ -508,30 +508,24 @@ int flow_modify(struct flow_cfg *target, char *buffer)
 }
 
 // chatgpt
-int convert_local_time_to_utc(struct timeval *local_time, struct timeval *utc_time) {
-    // Get the current local time zone offset from UTC in seconds
-    time_t now = time(NULL);
-    struct tm* local_tm = localtime(&now);
-    time_t local_tz_offset = -local_tm->tm_gmtoff;
+int convertToUTC(struct timeval *tv) {
+    // Get the current time in the local time zone
+    struct timeval localTime;
+    gettimeofday(&localTime, NULL);
 
-    // Convert the struct timeval to total microseconds
-    long long local_time_usec = local_time->tv_sec * 1000000LL + local_time->tv_usec;
+    // Calculate the time difference between local and UTC time in seconds
+    time_t timeZoneOffset = localTime.tv_sec - tv->tv_sec;
 
-    // Adjust the local time to UTC by subtracting the local time zone offset
-    long long utc_time_usec = local_time_usec - local_tz_offset * 1000000LL;
-
-    // Set the adjusted UTC time back into the struct timeval
-    utc_time->tv_sec = utc_time_usec / 1000000;
-    utc_time->tv_usec = utc_time_usec % 1000000;
-
-    return 0;
+    // Adjust the input timeval structure to UTC time
+    tv->tv_sec += timeZoneOffset;
+    return(0);
 }
+
 
 // update in progress // calculates start time
 int start_time(long int d, long int mo, long int y, long int h, long int m, long int s, long int us)//msec is miliseconds
 {
   struct tm start_tm;
-  struct timeval local = {0,0};
   start_tm.tm_year = y - 1900;   // Year (since 1900, so 2021 becomes 121)
   start_tm.tm_mon = mo;     // Month (0 = January, 1 = February, ...)
   start_tm.tm_mday = d;    // Day of the month
@@ -544,17 +538,24 @@ int start_time(long int d, long int mo, long int y, long int h, long int m, long
     RUDEBUG1("start_time() - invalid START time\n");
     return(-1);
   }
-  RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld:%ld:%ld:%ld:%ld",d,mo,y,h,m,s,us);
+  RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld:%ld:%ld:%ld:%ld)/n",d,mo,y,h,m,s,us);
+
+  // Get the actual time zone
+  time_t now;
+  struct tm localNow;
+  time(&now);
+  localtime_r(&now, &localNow);
+  int systemTimezoneOffset = localNow.tm_gmtoff; // Timeshift in Seconds
 
   // calculate start as unix
-  local.tv_sec = mktime(&start_tm); 
-  local.tv_usec = us;
+  tester_start.tv_sec = mktime(&start_tm) + systemTimezoneOffset; 
+  tester_start.tv_usec = us;
 
   // convert the start time to UTC
-  if(convert_local_time_to_utc(&local, &tester_start) != 0) {
+  /* if(convertToUTC(&tester_start) != 0) {
     RUDEBUG1("ERROR in TIME CONVERSION");
     return(-1);
-  }
+  } */
   
   return 0;
 }
