@@ -603,7 +603,7 @@ int read_cfg(FILE *infile)
 
     if(strncasecmp(buffer,"START",5) == 0){
       RUDEBUG7("read_cfg() - read START (line #=%d)\n",read_lines);
-      if((3!=sscanf(buffer,"%*5s %ld:%ld:%ld",&h,&m,&s)) || (start_set!=0)){
+      if((4!=sscanf(buffer,"%*5s %ld:%ld:%ld:%ld",&h,&m,&s)) || (start_set!=0)){
 	      errors--;
 	      RUDEBUG1("read_cfg() - START argument/already set error\n");
       } else {
