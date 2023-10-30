@@ -38,6 +38,9 @@ Commandline syntax:
 				Only root can do that. Be carefull -
 				this might lock up your computer !!!
 
+  -o <microseconds/reset> sets an offset of microseconds
+     if you start Now so it starts to the next full second + offset
+
 -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 Configuration file:
