@@ -523,7 +523,7 @@ int convertToUTC(struct timeval *tv) {
 
 
 // update in progress // calculates start time
-int start_time(long int d, long int mo, long int y, long int h, long int m, long int s, long int us)//msec is miliseconds
+int start_time(long int d, long int mo, long int y, long int h, long int m, long int s, long int us)//usec is microseconds
 {
   struct tm start_tm;
   start_tm.tm_year = y - 1900;   // Year (since 1900, so 2021 becomes 121)
@@ -540,17 +540,16 @@ int start_time(long int d, long int mo, long int y, long int h, long int m, long
   }
   RUDEBUG7("start_time aufgerufene Werte:\n(%ld:%ld:%ld:%ld:%ld:%ld:%ld)/n",d,mo,y,h,m,s,us);
 
-  /* // Get the actual time zone
+  /*  // Get the actual time zone
   time_t now;
   struct tm localNow;
   time(&now);
   localtime_r(&now, &localNow);
-  int systemTimezoneOffset = localNow.tm_gmtoff; // Timeshift in Seconds
  */
 
 
   // calculate start as unix
-  tester_start.tv_sec = mktime(&start_tm) - 7200; 
+  tester_start.tv_sec = mktime(&start_tm); 
   tester_start.tv_usec = us;
 
   // convert the start time to UTC

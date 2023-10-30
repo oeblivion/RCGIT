@@ -511,6 +511,7 @@ static int init_rude(void)
     goto init_exit;
   }
 
+  RUDEBUG7("%ld.%ld start zeit in init_rude\n",tester_start.tv_sec,tester_start.tv_usec);
   /* Check the time when we should start/have started transmission */
   gettimeofday(&now,NULL);
   if(timercmp(&tester_start,&now,>)){
@@ -525,19 +526,3 @@ static int init_rude(void)
   return(retval);
 }
 
-
-void timeprint() {
-    time_t currentTime;
-    struct tm *timeInfo;
-
-    // Get the current time
-    time(&currentTime);
-
-    // Convert to a struct tm
-    timeInfo = localtime(&currentTime);  // Use localtime for local time zone
-
-    // Format and print the time in 24-hour format
-    char buffer[9];  // Buffer to hold the formatted time
-    strftime(buffer, sizeof(buffer), "%H:%M:%S", timeInfo);
-    RUDEBUG7("Current time: %s\n", buffer);
-}
