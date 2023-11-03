@@ -29,17 +29,15 @@ Commandline syntax:
 
 	-v			Print version information
 
-	-s <script file>	Use this option to point out the correct
+	-s <script file>-<offset>	Use this option to point out the correct
 				script file that describes the flows. This
 				option is compulsory if you want to generate
-				traffic.
+				traffic. Offset only works with conigs with Start Now. Otherwise it will use the start time
 
 	-P <priority>		Set the process real-time priority.
 				Only root can do that. Be carefull -
 				this might lock up your computer !!!
 
-  -o <microseconds/reset> sets an offset of microseconds
-     if you start Now so it starts to the next full second + offset
 
 -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 

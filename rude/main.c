@@ -66,8 +66,7 @@ struct timeval  tester_start = {0,0};  /* Absolute process START TIME       */
 struct udp_data *data        = NULL;   /* */
 char *buffer                 = NULL;   /* */
 int max_packet_size          = 0;      /* Size of the largest packet        */
-int ms_offset = 0;                     /*Offset when start is Now*/
-FILE *data;
+long int offset = 0;
 
 
 /****************************************************************************/
@@ -86,13 +85,6 @@ int main(int argc, char **argv)
   uid_t user_id         = getuid();
   struct sigaction action;
   struct sched_param p;
-  
-  /*initialize the values from the data storage*/
-  if(data != NULL){
-    data = fopen("offset.txt", "r");
-    fscanf(data, "%ld", &ms_offset);
-    fclose("offset.txt");
-  }
 
   printf("rude version %s, Copyright (C) 1999 Juha Laine and Sampo Saaristo\n"
 	 "rude comes with ABSOLUTELY NO WARRANTY!\n"
@@ -129,11 +121,20 @@ int main(int argc, char **argv)
 
     case 's':
       if(optarg != NULL){
+        RUDEBUG7("optarg vor split: %s\n", optarg);
+        char *delimiter = strstr(optarg, "-"); // Sucht nach dem Bindestrich
+        if (delimiter != NULL) {
+            *delimiter = '\0'; // Teilt die Zeichenkette am Bindestrich auf
+            offset = atoi(delimiter + 1); // Konvertiert die Zeichenkette nach dem Bindestrich in eine Zahl
+            RUDEBUG7("testerStart:%ld\n", tester_start.tv_usec);
+        }
+        RUDEBUG7("optarg: %s\n", optarg);
         if((scriptfile=fopen((const char *)optarg,"r")) == NULL){
           fprintf(stderr,"rude: could not open %s: %s\n",
             optarg,strerror(errno));
           retval = -2;
         }
+        
       } else {
 	RUDEBUG1("rude: invalid commandline arguments!\n");
 	retval = -2;
@@ -156,27 +157,6 @@ int main(int argc, char **argv)
 	retval = -2;
       }
       break;
-
-    case 'o': /*setze den ms offset anders*/
-      if(optarg != NULL){
-        /*wenn reset dahinter steht setz ms_offset auf null ansonsten nimm die Zahl die dahintersteht*/
-        if (strcmp(optarg, "reset") == 0 && atoi(optarg) >= 0 && atoi(optarg) < 1000000) {
-          ms_offset = 0;
-        } else {
-          ms_offset = atoi(optarg);
-        }
-        data = fopen("offset.txt", "w");
-        if(data != NULL){
-          fprintf("offset.txt", "%ld", ms_offset);
-        }
-        fclose("offset.txt");
-      }
-      else {
-        RUDEBUG1("rude: invalid commandline arguments!\n");
-        retval = -2;
-      }
-      break;
-
     default:
       usage(argv[0]);
       retval = -2;
@@ -319,12 +299,12 @@ void rude_handler(int value){
  */
 static void usage(char *name)
 {
-  printf("\nusage: %s -h | -v | -s scriptfile [-p priority]\n\n"
+  printf("\nusage: %s -h | -v | -s scriptfile [-p priority] | -0 [microseconds]\n\n"
 	 "\t-h            = print (this) short help and usage information\n"
 	 "\t-v            = print the version number and exit\n"
-	 "\t-s scriptfile = path to the flow configuration file\n"
+	 "\t-s scriptfile-<offset> = path to the flow configuration file. Offset only works with conigs with Start Now. Otherwise it will use the start time.\n"
 	 "\t-P priority   = process realtime priority {1-90}\n\n"
-   "\t-o <microseconds/reset> sets an offset of microseconds if you start Now so it starts to the next full second + offset\n\n",name);
+   ,name);
 
   
 } /* usage() */

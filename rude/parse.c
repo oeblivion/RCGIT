@@ -70,7 +70,7 @@
 extern struct flow_cfg *head;
 extern struct timeval  tester_start;
 extern int             max_packet_size;
-extern int             ms_offset;
+extern int             offset;
 
 extern void            send_cbr(struct flow_cfg *);   /* flow_txmit.c */
 extern void            send_trace(struct flow_cfg *); /* flow_txmit.c */
@@ -595,7 +595,7 @@ int read_cfg(FILE *infile)
       } else {
 	      gettimeofday(&tester_start,NULL);
         tester_start.tv_sec += 1;
-        tester_start.tv_usec = ms_offset;
+        tester_start.tv_usec = offset;
 	      start_set = 1;
 	      commands++;
       }
