@@ -157,6 +157,16 @@ int main(int argc, char **argv)
 	retval = -2;
       }
       break;
+    case 'o': /*setze den ms offset anders*/
+      if(optarg != NULL){
+        offset = atoi(optarg);
+        
+      }
+      else {
+        RUDEBUG1("rude: invalid commandline arguments!\n");
+        retval = -2;
+      }
+      break;
     default:
       usage(argv[0]);
       retval = -2;
@@ -304,6 +314,7 @@ static void usage(char *name)
 	 "\t-v            = print the version number and exit\n"
 	 "\t-s scriptfile-<offset> = path to the flow configuration file. Offset only works with conigs with Start Now. Otherwise it will use the start time.\n"
 	 "\t-P priority   = process realtime priority {1-90}\n\n"
+   "\t-o <microseconds/reset> sets an offset of microseconds if you start Now so it starts to the next full second + offset\n"
    ,name);
 
   
