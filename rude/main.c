@@ -97,7 +97,7 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  while(((opt_ret=getopt(argc,argv,"s:P:hv")) != EOF) && (retval == 0)){
+  while(((opt_ret=getopt(argc,argv,"s:P:hvo:")) != EOF) && (retval == 0)){
     switch(opt_ret){
     case 'v':
       if((optind == 2) && (argc == 2)){
@@ -121,14 +121,12 @@ int main(int argc, char **argv)
 
     case 's':
       if(optarg != NULL){
-        RUDEBUG7("optarg vor split: %s\n", optarg);
-        char *delimiter = strstr(optarg, "-"); // Sucht nach dem Bindestrich
+        /* char *delimiter = strstr(optarg, "-"); // Sucht nach dem Bindestrich
         if (delimiter != NULL) {
             *delimiter = '\0'; // Teilt die Zeichenkette am Bindestrich auf
             offset = atoi(delimiter + 1); // Konvertiert die Zeichenkette nach dem Bindestrich in eine Zahl
             RUDEBUG7("testerStart:%ld\n", tester_start.tv_usec);
-        }
-        RUDEBUG7("optarg: %s\n", optarg);
+        } */
         if((scriptfile=fopen((const char *)optarg,"r")) == NULL){
           fprintf(stderr,"rude: could not open %s: %s\n",
             optarg,strerror(errno));
@@ -158,15 +156,15 @@ int main(int argc, char **argv)
       }
       break;
     case 'o': /*setze den ms offset anders*/
-      if(optarg != NULL){
+      RUDEBUG7("offset\n");
+      if (optarg != NULL) {
         offset = atoi(optarg);
-        
-      }
-      else {
-        RUDEBUG1("rude: invalid commandline arguments!\n");
+        RUDEBUG7("offset gesetzt\n");
+      } else {
+        RUDEBUG1("rude: Option 'o' erwartet ein Argument!\n");
         retval = -2;
       }
-      break;
+    break;
     default:
       usage(argv[0]);
       retval = -2;
